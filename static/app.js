@@ -7,6 +7,7 @@ let registrationSnapshotBase64 = null;
 let activeCandidates = [];
 let selectedCandidateIndex = 0;
 let activeRecognitionData = null;
+let isCameraMirrored = localStorage.getItem("camera_mirrored") !== "false"; // default true (flip/mirror)
 
 // DOM Elements
 const videoStream = document.getElementById("video-stream");
@@ -35,6 +36,7 @@ const btnModalConfirm = document.getElementById("btn-modal-confirm");
 document.addEventListener("DOMContentLoaded", () => {
   updateClock();
   setInterval(updateClock, 1000);
+  applyCameraMirror();
   startWebcam();
   loadLogs();
   loadUsers();
@@ -122,6 +124,27 @@ async function startWebcam() {
   }
 }
 
+// Flip / Mirror Camera
+function toggleCameraMirror() {
+  isCameraMirrored = !isCameraMirrored;
+  localStorage.setItem("camera_mirrored", isCameraMirrored);
+  applyCameraMirror();
+  showToast(isCameraMirrored ? "Kamera di-flip (Mirror: ON)" : "Kamera normal (Mirror: OFF)", "info");
+}
+
+function applyCameraMirror() {
+  const label = document.getElementById("mirror-status-label");
+  if (isCameraMirrored) {
+    if (videoStream) videoStream.classList.add("-scale-x-100");
+    if (regVideo) regVideo.classList.add("-scale-x-100");
+    if (label) label.innerText = "Mirror: ON";
+  } else {
+    if (videoStream) videoStream.classList.remove("-scale-x-100");
+    if (regVideo) regVideo.classList.remove("-scale-x-100");
+    if (label) label.innerText = "Mirror: OFF";
+  }
+}
+
 // Capture Snapshot from Video Stream
 function captureFrame(sourceVideo) {
   if (!sourceVideo || !sourceVideo.videoWidth) {
@@ -130,7 +153,15 @@ function captureFrame(sourceVideo) {
   hiddenCanvas.width = sourceVideo.videoWidth;
   hiddenCanvas.height = sourceVideo.videoHeight;
   const ctx = hiddenCanvas.getContext("2d");
+
+  ctx.save();
+  if (isCameraMirrored) {
+    ctx.translate(hiddenCanvas.width, 0);
+    ctx.scale(-1, 1);
+  }
   ctx.drawImage(sourceVideo, 0, 0, hiddenCanvas.width, hiddenCanvas.height);
+  ctx.restore();
+
   return hiddenCanvas.toDataURL("image/jpeg", 0.9);
 }
 

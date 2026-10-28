@@ -90,13 +90,21 @@
 
           <!-- Video Viewport -->
           <div class="relative w-full aspect-video bg-black rounded-xl overflow-hidden border border-zinc-800 flex items-center justify-center">
-            <video id="video-stream" autoplay playsinline muted class="w-full h-full object-cover"></video>
+            <video id="video-stream" autoplay playsinline muted class="w-full h-full object-cover -scale-x-100 transition-transform duration-200"></video>
             
             <!-- Status Indicator -->
-            <div class="absolute top-3 left-3 pointer-events-none">
+            <div class="absolute top-3 left-3 pointer-events-none z-10">
               <span class="px-2.5 py-1 rounded-lg bg-zinc-950/80 border border-zinc-800 text-[11px] text-zinc-300 backdrop-blur-sm flex items-center gap-1.5">
                 <i data-lucide="video" class="w-3.5 h-3.5 text-zinc-400"></i> Kamera Aktif
               </span>
+            </div>
+
+            <!-- Flip / Mirror Toggle Button -->
+            <div class="absolute top-3 right-3 z-10">
+              <button type="button" onclick="toggleCameraMirror()" title="Flip / Mirror Kamera" class="px-2.5 py-1 rounded-lg bg-zinc-950/85 hover:bg-zinc-900 border border-zinc-800 text-[11px] text-zinc-300 hover:text-white backdrop-blur-sm flex items-center gap-1.5 transition cursor-pointer shadow-sm">
+                <i data-lucide="flip-horizontal" class="w-3.5 h-3.5 text-blue-400"></i>
+                <span id="mirror-status-label">Mirror: ON</span>
+              </button>
             </div>
 
             <!-- Fallback / Camera Stopped Warning -->
@@ -216,7 +224,7 @@
             <label class="block text-xs font-semibold text-zinc-400 uppercase mb-2">Foto Wajah</label>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 items-center">
               <div class="relative aspect-video bg-black rounded-xl overflow-hidden border border-zinc-800 flex items-center justify-center">
-                <video id="reg-video" autoplay playsinline muted class="w-full h-full object-cover"></video>
+                <video id="reg-video" autoplay playsinline muted class="w-full h-full object-cover -scale-x-100 transition-transform duration-200"></video>
                 <img id="reg-preview" class="hidden w-full h-full object-cover" />
               </div>
               <div class="space-y-2">
